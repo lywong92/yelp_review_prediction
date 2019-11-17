@@ -7,7 +7,7 @@ class DataExtractor:
         self.path = os.path.join(path, '')
         self.business_data_folder = os.path.join(self.path, 'business.json')
         self.review_data_folder = os.path.join(self.path, 'review.json')
-        self.output_file_name = './dataset.csv'
+        self.output_file_name = './dataset.json'
         self.output_data = {}
         self.unique_categories = {}
     
@@ -48,9 +48,8 @@ class DataExtractor:
             bd_handle.close()
 
     def write_to_file(self):
-        of_handle = open(self.output_file_name, 'w')
-        of_handle.write('business_id,categories,review_id,text,useful,funny,cool\n')
-
+        data_to_write = []
+        num_written = 0
         for business_id in self.output_data:
             categories = self.output_data[business_id]['categories']
 
@@ -62,11 +61,23 @@ class DataExtractor:
                     useful = str(review['useful'])
                     funny = str(review['funny'])
                     cool = str(review['cool'])
-                    sep = '\t'
-                    out_line = business_id + sep + cat_to_write + sep + review_id + sep + text + sep + useful + sep + funny + sep + cool + '\n'
-                    of_handle.write(out_line)
+                    data_to_write.append({
+                        'business_id': business_id,
+                        'categories': cat_to_write,
+                        'review_id': review_id,
+                        'text': text,
+                        'useful': useful,
+                        'funny': funny,
+                        'cool': cool
+                    })
+                num_written = num_written + 1
             
-        of_handle.close()
+            if num_written > 1000:
+                break
+        
+        with open(self.output_file_name, 'w') as of_handle:
+            json.dump(data_to_write, of_handle)
+            of_handle.close()
 
 dataset_folder = sys.argv[1]
 data_extractor = DataExtractor(dataset_folder)
