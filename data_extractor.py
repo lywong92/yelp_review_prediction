@@ -36,7 +36,7 @@ class DataExtractor:
 
                 if rv_data['business_id'] in self.output_data:
                     review = {}
-                    review['review_id'] = rv_data['text']
+                    review['review_id'] = rv_data['review_id']
                     review['text'] = rv_data['text']
                     review['useful'] = rv_data['useful']
                     review['funny'] = rv_data['funny']
@@ -54,7 +54,7 @@ class DataExtractor:
         for business_id in self.output_data:
             categories = self.output_data[business_id]['categories']
 
-            if 'Food' in categories and len(self.output_data[business_id]['reviews']) > 0:
+            if 'Restaurants' in categories and len(self.output_data[business_id]['reviews']) > 0:
                 cat_to_write = ':'.join(categories)
                 for review in self.output_data[business_id]['reviews']:
                     review_id = review['review_id']
@@ -62,7 +62,7 @@ class DataExtractor:
                     useful = str(review['useful'])
                     funny = str(review['funny'])
                     cool = str(review['cool'])
-                    sep = ','
+                    sep = '\t'
                     out_line = business_id + sep + cat_to_write + sep + review_id + sep + text + sep + useful + sep + funny + sep + cool + '\n'
                     of_handle.write(out_line)
             
