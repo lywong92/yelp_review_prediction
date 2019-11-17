@@ -1,3 +1,5 @@
 ./venv
 yelp_dataset
 dataset.csv
+./vscode
+.DS_Store
