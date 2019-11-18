@@ -46,13 +46,33 @@ df['funny'] = pd.DataFrame(funny_scaled)
 cool_scaled = min_max_scaler.fit_transform(np.array(df['cool']).reshape(-1,1))
 df['cool'] = pd.DataFrame(cool_scaled)
 
+min_values = []
+ranges = np.arange(-0.1, 1.0, 0.1)
+print("ranges: ", ranges)
+processed_data = []
+
 for i in range(len(vote_labels)):
-    ranges = np.arange(-0.1, 1.1, 0.1)
     counts = df.groupby(pd.cut(df[vote_labels[i]], ranges)).count()[vote_labels[i]]
-    print(counts)
-    percent_counts = (df.groupby(pd.cut(df[vote_labels[i]], ranges)).count()[vote_labels[i]] / df.shape[0]) * 100
-    print(percent_counts)
-    print("total reviews: ", counts.sum())
+    min_count = counts.min()
+    print(counts, counts.min())
+
+    new_df = pd.DataFrame()
+    for j in range(1, 10):
+        lower, upper = j, j+1
+        new_data = df[(df[vote_labels[i]] >= ranges[j]) & (df[vote_labels[i]] < ranges[j+1])]
+        new_data = new_data.sample(frac=1)
+        new_data = new_data.head(min_count)
+        new_df.append(new_data)
+
+        print("new data: ", new_data.shape)
+        print(new_data.head(5))
+    
+    processed_data.append(new_df)
+
+
+    #percent_counts = (df.groupby(pd.cut(df[vote_labels[i]], ranges)).count()[vote_labels[i]] / df.shape[0]) * 100
+    #print(percent_counts)
+    #print("total reviews: ", counts.sum())
 
 
 #new_data = df[(df['useful'] > 0.6) & (df['funny'] > 0.6) & (df['cool'] > 0.6) & \
