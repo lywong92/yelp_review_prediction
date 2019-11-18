@@ -2,6 +2,7 @@
 /venv
 yelp_dataset
 dataset.csv
+normalised_data.json
 dataset.json
 .DS_Store
 .vscode/*

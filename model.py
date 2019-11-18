@@ -75,6 +75,21 @@ for i in range(len(vote_labels)):
     #print("total reviews: ", counts.sum())
 
 
+
+def write_to_file(useful, funny, cool):
+    output_dict = {
+        'useful': useful.to_json(orient = 'records'),
+        'funny': funny.to_json(orient = 'records'),
+        'cool': cool.to_json(orient = 'records')
+    }
+
+    with open('normalised_data.json', 'w') as op_handle:
+        json.dump(output_dict, op_handle)
+        op_handle.close()
+
+write_to_file(df.head(10), df.tail(10), df.head(10))
+
+
 #new_data = df[(df['useful'] > 0.6) & (df['funny'] > 0.6) & (df['cool'] > 0.6) & \
 #    (df['useful'] <= 0.8) & (df['funny'] <= 0.8) & (df['cool'] <= 0.8)]
 #print("size: ", new_data.shape)
