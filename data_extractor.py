@@ -49,7 +49,6 @@ class DataExtractor:
 
     def write_to_file(self):
         data_to_write = []
-        num_written = 0
         for business_id in self.output_data:
             categories = self.output_data[business_id]['categories']
 
@@ -69,11 +68,7 @@ class DataExtractor:
                         'useful': useful,
                         'funny': funny,
                         'cool': cool
-                    })
-                num_written = num_written + 1
-            
-            if num_written > 1000:
-                break
+                    })           
         
         with open(self.output_file_name, 'w') as of_handle:
             json.dump(data_to_write, of_handle)
