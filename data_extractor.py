@@ -73,8 +73,3 @@ class DataExtractor:
         with open(self.output_file_name, 'w') as of_handle:
             json.dump(data_to_write, of_handle)
             of_handle.close()
-
-dataset_folder = sys.argv[1]
-data_extractor = DataExtractor(dataset_folder)
-data_extractor.extract()
-data_extractor.write_to_file()

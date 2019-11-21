@@ -1,6 +1,21 @@
 # Yelp Review Prediction
-This repository hosts the code for the CS 544 end of semester project. In order to ensure that we used only Restaurant data and that our data is in the format that we desire, we have added a script called data_extractor.py. It can be run as follows:
+This repository hosts the code for the CS 544 end of semester project.
 
-`python3 data_extractor.py '<location of folder containing yelp dataset>`
+Python version: 3.7.5
 
-The above code should output a file called `dataset.csv` which will contain the data that we have used to train our model
+Installation:
+
+    pip install gensim
+    pip install matplotlib
+    pip install numpy
+    pip install pandas
+    pip install sklearn
+    pip install 
+
+To run our code:
+
+`python3 run.py <location of folder containing yelp dataset>`
+
+The above code first extracts review and business data from the original Yelp dataset and writes to "dataset.json". It then preprocesses the dataset and writes to "normalised_data.json. Finally, it generates three word2vec models for each of the normalised dataset.
+
+The deep learning model implementation is to be continued.
