@@ -3,6 +3,10 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow.keras.layers import Bidirectional, Dense, Embedding, SimpleRNN, LSTM
+from tensorflow.keras import Sequential
 
 class LSTMModel:
     def __init__(self, data_file):
@@ -12,6 +16,7 @@ class LSTMModel:
         self.df_text = []
         self.labels_cap = ["Useful", "Funny", "Cool"]
         self.labels = ["useful", "funny", "cool"]
+        self.embedding_dim = 50
 
     def read_data_file(self):        
         # read normalized datatsets
@@ -47,7 +52,7 @@ class LSTMModel:
                 text.append(line)
 
             self.df_text.append(text)
-            model = gensim.models.Word2Vec(text, min_count=5, size= 100, workers=3, sg=1)
+            model = gensim.models.Word2Vec(text, min_count=1, size=self.embedding_dim, workers=3, sg=1)
             model.train(text,total_examples=len(text),epochs=5)
 
             self.word2vec_models.append(model)
@@ -56,10 +61,71 @@ class LSTMModel:
             print("Word vector for \"food\": ", model['food'])
             print("Top 5 most similar words as \"pasta\": ", model.wv.most_similar(positive='pasta', topn=5))
 
-    def build_model(self, i):
-        # i denotes which dataset to build the model on
-        max_length = max([len(s) for s in self.df_text[i]])
+    def build_model(self, idx):
+        # idx denotes which dataset to build the model on
+
+        common_words = ['i', 'you', 'they', 'has', 'have', 'are', 'is', 'a', 's', 'the', 'there', 'of', 'was', 'were', 'to', 'and', 'it', 'we', 're']
+
+        for i in range(len(self.df_text[idx])):
+            j = 0
+            while j < len(self.df_text[idx][i]):
+                word = self.df_text[idx][i][j]
+                if word in common_words:
+                    self.df_text[idx][i].pop(j)
+                else:
+                    j += 1
+
+        max_length = max([len(s) for s in self.df_text[idx]])
+        num_reviews = len(self.df_text[idx])
         print(max_length)
+
+        text = np.zeros((num_reviews, max_length, self.embedding_dim))
+        for i in range(len(self.df_text[idx])):
+            train_idx = 0
+            for j in range(len(self.df_text[idx][i])):
+                # get jth word of ith review
+                word = self.df_text[idx][i][j]
+                #print("word: ", word)
+                if word in self.word2vec_models[idx].wv.vocab:
+                    vec = self.word2vec_models[idx][word]
+                    text[i,train_idx,:] = vec
+                    train_idx += 1
+                #else:
+                #    print("review[{0:d}], word[{1:d}]: not in vocab".format(i, j))
+
+        print("Finished creating text... ")
+        print("text size: ", text.shape)
+        batch_size = 24
+        rnn_dim = 100
+        # model
+        model = Sequential()
+        model.add(Dense(batch_size, input_shape=(max_length, self.embedding_dim)))
+        model.add(Bidirectional(LSTM(rnn_dim, return_sequences=False)))
+        model.add(Dense(1, activation='relu'))
+        print(model.summary)
+
+        model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(0.003), metrics=['acc'])
+
+        labels = self.df[idx]['useful'].values
+        train_text, test_text, train_labels, test_labels = train_test_split(text, labels, test_size=0.1)
+
+        print("train data: ", train_text.shape, train_labels.shape)
+        print("test data: ", test_text.shape, test_labels.shape)
+
+        i = num_reviews // batch_size
+        i *= batch_size
+        train_text = train_text[:i,:,:]
+        train_labels = train_labels[:i]
+
+        model.fit(train_text, train_labels, batch_size=batch_size, shuffle=True, epochs=10)
+
+        predicted = model.predict(test_text)
+
+        print("predicted: ", predicted[:30])
+        print("real: ", test_labels[:30])
+
+        loss, acc = model.evaluate(test_text, test_labels)
+        print("loss: ", loss, " accuracy; ", acc)
 
 
 if __name__ == "__main__":
