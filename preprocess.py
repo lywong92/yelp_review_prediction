@@ -39,6 +39,9 @@ def preprocess_data(data_file):
         print("out of range counts: ", df.shape[0]-counts.sum())
 
     # clip vote counts to a range
+    df['useful_values'] = df['useful']
+    df['funny_values'] = df['funny']
+    df['cool_values'] = df['cool']
     df['useful'] = df['useful'].clip(3.0, 27.0)
     df['funny'] = df['funny'].clip(3.0, 20.0)
     df['cool'] = df['cool'].clip(3.0, 24.0)
