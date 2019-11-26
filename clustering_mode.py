@@ -25,7 +25,7 @@ class ClusteringModel:
         self.tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
         self.tsne_visualisation_file_name = './visualisation.png'
         self.useful_wve_model_name = './useful_wve'
-        self.num_clusters = 30
+        self.num_clusters = 100
         self.embedding_size = 125
         self.min_word_count = 50
         self.context = 5
@@ -82,7 +82,7 @@ class ClusteringModel:
 
     def get_top_words(self):
         tree = KDTree(self.wve_model.wv.syn0)
-        closest_points = [tree.query(np.reshape(x, (1, -1)), k=10) for x in self.cluster_centers]
+        closest_points = [tree.query(np.reshape(x, (1, -1)), k=5) for x in self.cluster_centers]
         closest_words_ids = [x[1] for x in closest_points]
         closest_words = {}
         closest_ids = {}
@@ -132,7 +132,7 @@ class ClusteringModel:
         plt.title('Yelp Data Visualisation')
         plt.grid(True)
         plt.savefig(self.tsne_visualisation_file_name, format='png', dpi=150, bbox_inches='tight')
-        # plt.show()
+        plt.clf()
 
 dataset_folder = sys.argv[1]
 clustering_model = ClusteringModel(dataset_folder)
@@ -149,6 +149,6 @@ cmaps = cycle([
             'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
             'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'hsv',
             'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar'])
-for i in range(30):
+for i in range(100):
     col = next(cmaps);
     clustering_model.display_cloud(i, col)
