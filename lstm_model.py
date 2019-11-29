@@ -22,10 +22,12 @@ class LSTMModel:
         model = tf.keras.Sequential()
         input_layer = tf.keras.layers.InputLayer(batch_size=128, input_shape=(self.num_clusters, self.embedding_size))
         model.add(input_layer)
-        rnn_layer = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units = 800, activation = 'tanh', dropout = 0.1, recurrent_dropout = 0.1, implementation = 1, return_sequences = True))
-        model.add(rnn_layer)
-        dense_layer = tf.keras.layers.Dense(1200, activation='tanh', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')
+        # rnn_layer = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units = 200, activation = 'tanh', dropout = 0.1, recurrent_dropout = 0.1, implementation = 1, return_sequences = False))
+        # model.add(rnn_layer)
+        dense_layer = tf.keras.layers.Dense(5000, activation='tanh', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')
         model.add(dense_layer)
+        dense_middle = tf.keras.layers.Dense(3000, activation='tanh', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')
+        model.add(dense_middle)
         dense_layer_2 = tf.keras.layers.Dense(1, activation='tanh')
         model.add(dense_layer_2)
         flatten_layer = tf.keras.layers.Flatten()
@@ -33,7 +35,7 @@ class LSTMModel:
         dense_layer_3 = tf.keras.layers.Dense(1, activation='tanh')
         model.add(dense_layer_3)
 
-        model.compile(loss = 'mse', optimizer = tf.keras.optimizers.Adam(learning_rate = 0.01), metrics = ['mse'])
+        model.compile(loss = 'mse', optimizer = tf.keras.optimizers.Adam(learning_rate = 0.01), metrics = ['mse', 'mae'])
         self.model = model
         print(model.summary())
 
@@ -55,7 +57,7 @@ class LSTMModel:
     
     def train_model(self):
         logging.info('Training Model')
-        self.model.fit(self.train_data, self.train_labels, batch_size = 128, epochs = 50, validation_split = 0.3)
+        self.model.fit(self.train_data, self.train_labels, batch_size = 128, epochs = 5, validation_split = 0.3)
 
     def calculate_accuracy(self):
         logging.info('Hurrah')
