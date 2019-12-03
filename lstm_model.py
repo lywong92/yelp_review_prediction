@@ -24,15 +24,15 @@ class LSTMModel:
         model.add(input_layer)
         # rnn_layer = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units = 200, activation = 'tanh', dropout = 0.1, recurrent_dropout = 0.1, implementation = 1, return_sequences = False))
         # model.add(rnn_layer)
-        dense_layer = tf.keras.layers.Dense(5000, activation='tanh', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')
+        dense_layer = tf.keras.layers.Dense(5000, activation='relu', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')
         model.add(dense_layer)
-        dense_middle = tf.keras.layers.Dense(3000, activation='tanh', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')
-        model.add(dense_middle)
-        dense_layer_2 = tf.keras.layers.Dense(1, activation='tanh')
+        # dense_middle = tf.keras.layers.Dense(3000, activation='tanh', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')
+        # model.add(dense_middle)
+        dense_layer_2 = tf.keras.layers.Dense(1, activation='relu')
         model.add(dense_layer_2)
         flatten_layer = tf.keras.layers.Flatten()
         model.add(flatten_layer)
-        dense_layer_3 = tf.keras.layers.Dense(1, activation='tanh')
+        dense_layer_3 = tf.keras.layers.Dense(1, activation='linear')
         model.add(dense_layer_3)
 
         model.compile(loss = 'mse', optimizer = tf.keras.optimizers.Adam(learning_rate = 0.01), metrics = ['mse', 'mae'])
@@ -50,9 +50,11 @@ class LSTMModel:
         with open(self.train_test_data_file) as fh:
             data = json.load(fh)
             self.train_data = np.array(data['train_data'], dtype=np.float64)
-            self.train_labels = np.array(data['train_labels'], dtype=np.float64)
+            # self.train_labels = np.array(data['train_labels'], dtype=np.float64)
+            self.train_labels = np.array(data['train_alternate_labels'], dtype=np.float64)
             self.test_data = np.array(data['test_data'], dtype=np.float64)
-            self.test_labels = np.array(data['test_labels'], dtype=np.float64)
+            self.test_labels = np.array(data['test_alternate_labels'], dtype=np.float64)
+            # self.test_labels = np.array(data['test_labels'], dtype=np.float64)
             fh.close()
     
     def train_model(self):
@@ -67,8 +69,11 @@ class LSTMModel:
         total = len(self.test_labels)
 
         for index, prediction in enumerate(predictions):
-            if abs(prediction - self.test_labels[index]) < 0.15:
+            # if (prediction > 0.5 and self.test_labels[index] > 0.5):
+            if abs(prediction - self.test_labels[index]) < 5:
                 correct = correct + 1
+            # elif(prediction <= 0.5 and self.test_labels[index] <= 0.5):
+            #     correct = correct + 1
         
         accuracy = correct/total
         print('Final accuracy is ' + str(accuracy))

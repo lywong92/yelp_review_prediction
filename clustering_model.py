@@ -33,7 +33,7 @@ class ClusteringModel:
         self.wve_model_name = './wve.model'
         self.cluster_data_file_name = './cluster_data.json'
         self.cluster_model_file_name = './cluster.model'
-        self.num_clusters = 70
+        self.num_clusters = 120
         self.embedding_size = 250
         self.min_word_count = 50
         self.context = 30

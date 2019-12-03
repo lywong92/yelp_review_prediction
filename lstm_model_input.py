@@ -68,6 +68,7 @@ class LSTMModelInput:
         
         self.input_data = np.array(transformed_text)
         self.labels = np.array(df['useful'].tolist())
+        self.alternate_labels = np.array(df['useful_values'].tolist())
 
     def get_cluster_bucket(self, word):
         if word in self.wve_model.wv.vocab:
@@ -83,12 +84,16 @@ class LSTMModelInput:
         test_input = self.input_data[split_point:rows, :]
         train_labels = self.labels[0:split_point]
         test_labels = self.labels[split_point:rows]
+        train_alternate_labels = self.alternate_labels[0:split_point]
+        test_alternate_labels = self.alternate_labels[split_point:rows]
         
         output_data = {}
         output_data['train_data'] = train_input.tolist()
         output_data['test_data'] = test_input.tolist()
         output_data['train_labels'] = train_labels.tolist()
         output_data['test_labels'] = test_labels.tolist()
+        output_data['train_alternate_labels'] = train_alternate_labels.tolist()
+        output_data['test_alternate_labels'] = test_alternate_labels.tolist()
         
         with open(self.train_test_data_file_path, 'w') as fh:
             json.dump(output_data, fh)
