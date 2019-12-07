@@ -11,3 +11,5 @@ dataset.json
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+clusters/*
+train_test_data.json
