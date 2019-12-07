@@ -10,7 +10,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Bidirectional, Dense, Embedding, SimpleRNN, LSTM
 from tensorflow.keras import Sequential
 
-class LSTMModel:
+class BiLSTMModel:
     def __init__(self, data_file):
         self.data_file = data_file
         self.df = []
@@ -20,7 +20,7 @@ class LSTMModel:
         self.labels = ["useful", "funny", "cool"]
         self.embedding_dim = 50
 
-    def read_data_file(self):        
+    def read_data(self):        
         # read normalized datatsets
         with open(self.data_file, 'r') as f:
             full_data = json.load(f)
@@ -224,8 +224,8 @@ class LSTMModel:
 
 if __name__ == "__main__":
 
-    model = LSTMModel("normalised_data.json")
-    model.read_data_file()
+    model = BiLSTMModel("normalised_data.json")
+    model.read_data()
     model.generate_word2vec()
     model.build_model(0)
     
