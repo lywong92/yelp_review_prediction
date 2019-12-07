@@ -1,5 +1,5 @@
 from data_extractor import DataExtractor
-from model import build_model
+#from model import build_model
 from preprocess import write_to_file, preprocess_data
 import sys
 
@@ -16,4 +16,4 @@ data_extractor.write_to_file()
 preprocess_data(dataset_file)
 
 # build model
-build_model(normalised_dataset_file)
+#build_model(normalised_dataset_file)
