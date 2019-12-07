@@ -104,7 +104,7 @@ class ClusteringModel:
     def get_top_words(self):
         logging.info("Getting top words for each cluster")
         tree = KDTree(self.wve_model.wv.syn0)
-        closest_points = [tree.query(np.reshape(x, (1, -1)), k=20) for x in self.cluster_centers]
+        closest_points = [tree.query(np.reshape(x, (1, -1)), k=20) for x in self.cluster_centers[0:2]]
         closest_words_ids = [x[1] for x in closest_points]
         closest_words = {}
         closest_ids = {}
